@@ -64,7 +64,12 @@ const TodoScreen = ({ route }) => {
         data={todos}
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigation.navigate('AddToDoScreen', { todo: item })}>
-            <TodoItem text={item.text} onDelete={() => deleteTodo(item.id)} />
+            <TodoItem 
+              title={item.text.substring(0, 9)} // Get first 5-6 characters as title
+              date={new Date(item.createdAt).toLocaleDateString('en-GB')} // Format date as DDDD/MMMM/YYYY
+              text={item.text}
+              onDelete={() => deleteTodo(item.id)} 
+            />
           </TouchableOpacity>
         )}
         keyExtractor={(item) => item.id}
@@ -72,7 +77,7 @@ const TodoScreen = ({ route }) => {
       {todos.length === 0 && (
         <View style={styles.imageContainer}>
           <Image source={require('../assets/To_do_empty.png')} style={styles.image} />
-          <Text style={styles.boldText}>Create your first To Do List</Text>
+          <Text style={styles.boldText}>Create your first To Do</Text>
           <TouchableOpacity style={styles.addToButton} onPress={() => navigation.navigate('AddToDoScreen')}>
             <Text style={styles.addToButtonText}>Add To Do</Text>
           </TouchableOpacity>

@@ -14,7 +14,7 @@ const AddToDoScreen = ({ route }) => {
   const editor = useEditorBridge({
     autofocus: true,
     avoidIosKeyboard: true,
-    initialContent: todo ? todo.text : '', // Provide initial content from todo
+    initialContent: todo ? todo.text : '',
   });
 
  
@@ -22,20 +22,20 @@ const AddToDoScreen = ({ route }) => {
   useEffect(() => {
     if (todo) {
       // Set initial content of the editor to the text of the todo
-      //console.log("Todo Text:", todo.text);
+      console.log("Todo Text:", todo.text);
       editor.setContent(todo.text);
     }
   }, [todo]);
 
   const addTodo = () => {
-    editor.getText().then((text) => {
-      if (text.trim() !== '') {
+    editor.getText().then((content) => {
+      if (content.trim() !== '') {
         if (todo) {
-          const updatedTodo = { ...todo, text: text }; // Update text of existing todo
+          const updatedTodo = { ...todo, text: content };
           navigation.navigate('TodoScreen', { newTodo: updatedTodo });
         } else {
-          const newTodo = { id: Date.now().toString(), text: text };
-          navigation.navigate('TodoScreen', { newTodo: newTodo }); 
+          const newTodo = { id: Date.now().toString(), text: content, createdAt: new Date().toISOString() };
+          navigation.navigate('TodoScreen', { newTodo}); 
         }
         setText('');
       }
@@ -45,11 +45,11 @@ const AddToDoScreen = ({ route }) => {
   return (
     <SafeAreaView style={styles.fullScreen}>
       <RichText editor={editor} />
-      <Toolbar editor={editor} />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'android' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
       >
+      <Toolbar editor={editor} />
       </KeyboardAvoidingView>
       <TouchableOpacity style={styles.addButton} onPress={addTodo}>
           <Icon name="plus" size={20} color="white" />
