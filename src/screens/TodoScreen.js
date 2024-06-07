@@ -1,4 +1,3 @@
-//screens/TodoScreen.js
 import React, { useState, useEffect } from 'react';
 import { View, FlatList, StyleSheet, Image, Text, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -65,8 +64,8 @@ const TodoScreen = ({ route }) => {
         renderItem={({ item }) => (
           <TouchableOpacity onPress={() => navigation.navigate('AddToDoScreen', { todo: item })}>
             <TodoItem 
-              title={item.text.substring(0, 9)} // Get first 5-6 characters as title
-              date={new Date(item.createdAt).toLocaleDateString('en-GB')} // Format date as DDDD/MMMM/YYYY
+              title={item.text.substring(0, 13)} // Get first 5-6 characters as title
+              date={new Date(item.createdAt).toLocaleDateString('en-GB')} // Format date as DD/MM/YYYY
               text={item.text}
               onDelete={() => deleteTodo(item.id)} 
             />

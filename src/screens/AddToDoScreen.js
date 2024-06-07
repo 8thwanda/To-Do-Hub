@@ -1,8 +1,7 @@
-//screens/AddTodoScreen.js
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { SafeAreaView, KeyboardAvoidingView, Platform, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useNavigation } from '@react-navigation/native';
 import { RichText, Toolbar, useEditorBridge } from '@10play/tentap-editor';
 
 const AddToDoScreen = ({ route }) => {
@@ -17,17 +16,15 @@ const AddToDoScreen = ({ route }) => {
     initialContent: todo ? todo.text : '',
   });
 
- 
- 
   useEffect(() => {
     if (todo) {
       // Set initial content of the editor to the text of the todo
       console.log("Todo Text:", todo.text);
       editor.setContent(todo.text);
     }
-  }, [todo]);
+  }, [todo, editor]);
 
-  const addTodo = () => {
+  const addTodo = useCallback(() => {
     editor.getText().then((content) => {
       if (content.trim() !== '') {
         if (todo) {
@@ -35,25 +32,34 @@ const AddToDoScreen = ({ route }) => {
           navigation.navigate('TodoScreen', { newTodo: updatedTodo });
         } else {
           const newTodo = { id: Date.now().toString(), text: content, createdAt: new Date().toISOString() };
-          navigation.navigate('TodoScreen', { newTodo}); 
+          navigation.navigate('TodoScreen', { newTodo }); 
         }
         setText('');
       }
     });
-  };
+  }, [editor, navigation, todo]);
+
+  useFocusEffect(
+    useCallback(() => {
+      navigation.setOptions({
+        headerRight: () => (
+          <TouchableOpacity style={styles.addButton} onPress={addTodo}>
+            <Icon name="plus" size={20} color="white" />
+          </TouchableOpacity>
+        ),
+      });
+    }, [navigation, addTodo])
+  );
 
   return (
     <SafeAreaView style={styles.fullScreen}>
       <RichText editor={editor} />
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'android' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
       >
-      <Toolbar editor={editor} />
+        <Toolbar editor={editor} />
       </KeyboardAvoidingView>
-      <TouchableOpacity style={styles.addButton} onPress={addTodo}>
-          <Icon name="plus" size={20} color="white" />
-        </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -61,6 +67,7 @@ const AddToDoScreen = ({ route }) => {
 const styles = StyleSheet.create({
   fullScreen: {
     flex: 1,
+    //padding: 6,
   },
   keyboardAvoidingView: {
     position: 'absolute',
@@ -68,9 +75,7 @@ const styles = StyleSheet.create({
     bottom: 0,
   },
   addButton: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
+    marginRight: 10,
     backgroundColor: 'blue',
     width: 40,
     height: 40,
